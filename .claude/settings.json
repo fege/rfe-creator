@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "assess-rfe": {
+      "source": {
+        "source": "github",
+        "repo": "n1hility/assess-rfe"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "assess-rfe@assess-rfe": true
+  }
+}
