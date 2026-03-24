@@ -15,7 +15,7 @@ Check the review results. If any RFEs have a "revise" or "reject" recommendation
 
 ## Step 2: Read RFE Artifacts
 
-Read `artifacts/rfes.md` and all files in `artifacts/rfe-tasks/`.
+Read `artifacts/rfes.md` and all RFE files in `artifacts/rfe-tasks/`. **Skip `*-comments.md` files** — these contain Jira comment history used during review and must NOT be included in the Jira description or submitted back to Jira.
 
 ## Step 3: Confirm with User
 
@@ -50,6 +50,12 @@ Labels:      <From RFE if specified>
 **For new RFEs** (no existing Jira key): Use `mcp__atlassian__jira_create_issue` to create each ticket. After creation, record the Jira key.
 
 **For existing RFEs** (has a Jira key): Use `mcp__atlassian__jira_edit_issue` to update the existing ticket's Summary and Description only. Do not change Priority, Labels, or other fields unless the user explicitly asks — those were set intentionally by the original author.
+
+**Before submitting**, strip the following from the description content:
+- `### Revision Notes` sections (internal review tracking)
+- `> *Review note: ...` blockquotes (review annotations on author context sections)
+- `<!-- REVISION NOTE: ... -->` HTML comments
+- Any artifact metadata lines (`**Jira Key**:`, `**Size**:`, `**Status**:`) — these are local artifact fields, not Jira description content
 
 ### If Jira MCP Is NOT Available
 

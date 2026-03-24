@@ -11,7 +11,21 @@ You are an RFE review orchestrator. Your job is to review RFEs for quality and t
 
 Check if `$ARGUMENTS` contains a Jira key (e.g., `RHAIRFE-1234`).
 
-**If a Jira key is provided**: Fetch the RFE from Jira using `mcp__atlassian__jira_get_issue`. Write it to `artifacts/rfe-tasks/` as a local artifact using the RFE template format (read `${CLAUDE_SKILL_DIR}/../rfe.create/rfe-template.md` for the format). Update `artifacts/rfes.md` with the RFE summary. Record the Jira key in the artifact metadata so `/rfe.submit` knows to update rather than create.
+**If a Jira key is provided**: Fetch the RFE from Jira using `mcp__atlassian__getJiraIssue` with `fields: ["comment"]` to get both the description and comment history. Write the RFE to `artifacts/rfe-tasks/` as a local artifact using the RFE template format (read `${CLAUDE_SKILL_DIR}/../rfe.create/rfe-template.md` for the format). Update `artifacts/rfes.md` with the RFE summary. Record the Jira key in the artifact metadata so `/rfe.submit` knows to update rather than create.
+
+**Also write a separate comments file** to `artifacts/rfe-tasks/RFE-NNN-comments.md` with the Jira comment history. Format each comment as:
+
+```markdown
+# Comments: RHAIRFE-NNNN
+
+## <Author Name> — <date>
+<comment body>
+
+## <Author Name> — <date>
+<comment body>
+```
+
+This file provides stakeholder context to the review forks. It is NOT part of the RFE content and must NOT be pushed back to Jira during submission.
 
 **If no Jira key**: Proceed with existing local artifacts.
 
@@ -61,9 +75,13 @@ When any assess-rfe skill resolves its `{PLUGIN_ROOT}`, it should use the absolu
 - Does each RFE include evidence-based business justification?
 - Is each RFE right-sized for a single strategy feature?
 
+### Stakeholder Context
+
+Both review forks should read any `artifacts/rfe-tasks/RFE-NNN-comments.md` files that exist. Comments from stakeholders provide context about what is intentional in the RFE, what has already been discussed, and what related work exists. This context should inform the review — e.g., if a stakeholder has already confirmed a technology choice is deliberate, the rubric should not penalize it.
+
 ### Review 2: Technical Feasibility (Forked)
 
-Invoke the `rfe-feasibility-review` skill on the RFE artifacts. This runs in a forked context with architecture context (if available) to assess whether each RFE is technically feasible without the business context influencing the assessment.
+Invoke the `rfe-feasibility-review` skill on the RFE artifacts. This runs in a forked context with architecture context (if available) to assess whether each RFE is technically feasible without the business context influencing the assessment. If comments files exist in `artifacts/rfe-tasks/`, include them in the feasibility reviewer's context.
 
 ## Step 3: Combine Results
 
@@ -96,6 +114,9 @@ Write `artifacts/rfe-review-report.md` with the following structure:
 ### RFE-002: <title>
 ...
 
+## Changes vs. Original
+<For Jira-sourced RFEs only: summarize what was modified compared to the original Jira description. List sections added, removed, or edited so the user can see what will change if they submit.>
+
 ## Revision History
 <If this is a re-review, note what changed since the prior review:>
 - What concerns from the prior review were addressed
@@ -107,12 +128,30 @@ Write `artifacts/rfe-review-report.md` with the following structure:
 
 Always attempt at least one auto-revision cycle when any criterion scores below full marks. Improve what you can with available information. If a revision requires information you don't have (e.g., named customer accounts), make the best improvement possible and note the gap in Revision Notes for the user. Only skip auto-revision entirely if the RFE is technically infeasible or the problem statement needs to be rethought from scratch.
 
-1. Read the review feedback for each failing RFE
-2. Edit the artifact files to address the specific issues
-3. Add a `### Revision Notes` section at the end of each revised RFE documenting what changed and what gaps remain for the user to fill
-4. Re-run the review (go back to Step 2) on the revised artifacts
+### Revision Principles
 
-Missing details, weak justification, ambiguous language, and scope issues are all auto-revisable — fix what you can and flag what you can't in the revision notes.
+**Only edit sections that directly caused a rubric failure.** If the rubric didn't flag a section, don't touch it. If you're unsure whether a section contributed to a score, leave it alone. Never rewrite the entire artifact from scratch — this destroys author context that wasn't scored.
+
+**When a section mixes WHAT and HOW, annotate — don't delete.** If a section contains both business need and implementation detail, annotate the HOW portions inline with a review note rather than removing or rewriting the section:
+
+```markdown
+> *Review note: The implementation detail above may be more appropriate in the strategy phase (/strat.refine). Preserved for continuity.*
+```
+
+This flags the content for strategy refinement without destroying it. The HOW details are useful — they just belong in the STRAT, not the RFE. Labeling them lets the content carry forward naturally.
+
+**Right-sizing is a recommendation, never auto-applied.** If the rubric scores Right-sized at 0 or 1, report the recommendation to split in the review report. Do NOT remove acceptance criteria, scope items, or capabilities from the artifact to force a different shape. Splitting an RFE is a structural decision that changes what the RFE *is* — only the author can make that call.
+
+**Do not invent missing evidence.** If the rubric flags weak business justification due to missing named customers or revenue data, flag the gap in Revision Notes for the author to fill. Do not fabricate evidence.
+
+### Revision Steps
+
+1. Read the review feedback for each failing RFE
+2. Read the comments file (`artifacts/rfe-tasks/RFE-NNN-comments.md`) if it exists — stakeholder comments may explain why certain content is intentional
+3. Make targeted edits to the artifact files using the Edit tool to address specific rubric failures
+4. Annotate (don't delete) any author context sections that lean into HOW
+5. Add a `### Revision Notes` section at the end of each revised RFE documenting what changed and what gaps remain for the user to fill
+6. Re-run the review (go back to Step 2) on the revised artifacts
 
 **Revision limits**:
 - Maximum 2 auto-revision cycles
