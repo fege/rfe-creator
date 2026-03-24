@@ -103,7 +103,7 @@ Write `artifacts/rfe-review-report.md` with the following structure:
 ### RFE-001: <title>
 
 **Rubric score**: <score>/10 <PASS/FAIL> (or "skipped — plugin not installed")
-<Rubric feedback details if available>
+<Include the FULL rubric feedback verbatim — scores, notes, verdict, and actionable suggestions. Do not summarize or paraphrase the assessor's output. The assessor's specific recommendations (e.g., "remove the Technical Approach section") are instructions for the revision step and must not be lost in summarization.>
 
 **Technical feasibility**: <feasible / infeasible / needs RFE revision>
 **Strategy considerations**: <none / list of items flagged for /strat.refine>
@@ -132,13 +132,17 @@ Always attempt at least one auto-revision cycle when any criterion scores below 
 
 **Only edit sections that directly caused a rubric failure.** If the rubric didn't flag a section, don't touch it. If you're unsure whether a section contributed to a score, leave it alone. Never rewrite the entire artifact from scratch — this destroys author context that wasn't scored.
 
-**When a section mixes WHAT and HOW, annotate — don't delete.** If a section contains both business need and implementation detail, annotate the HOW portions inline with a review note rather than removing or rewriting the section:
+**Reframe, don't remove.** When the assessor flags sections for HOW violations, the problem may not be the information — it's the framing. Prescriptive architecture and implementation directives can almost always be reframed into non-prescriptive context that preserves useful information while fixing the rubric score. For example, a section that assigns components to architectural roles can be reframed as a flat context list with a disclaimer that engineering should determine the design. Only remove content as a last resort when there is nothing reframeable (pure implementation detail with no business-facing content).
 
-```markdown
-> *Review note: The implementation detail above may be more appropriate in the strategy phase (/strat.refine). Preserved for continuity.*
+**If content must be removed**, preserve it for Jira-sourced RFEs by writing it to `artifacts/rfe-tasks/RFE-NNN-removed-context.md` so `/rfe.submit` can post it as a comment, prefixed with:
+
+```
+*[RFE Creator]* The following technical implementation details were removed from the RFE description during review. This content is better suited for a RHAISTRAT and is preserved here for reference:
 ```
 
-This flags the content for strategy refinement without destroying it. The HOW details are useful — they just belong in the STRAT, not the RFE. Labeling them lets the content carry forward naturally.
+This file must NOT be merged back into the RFE description.
+
+**When a section mixes WHAT and HOW and the assessor did not flag it**, leave it alone. Do not proactively scan for additional HOW content beyond what the assessor identified.
 
 **Right-sizing is a recommendation, never auto-applied.** If the rubric scores Right-sized at 0 or 1, report the recommendation to split in the review report. Do NOT remove acceptance criteria, scope items, or capabilities from the artifact to force a different shape. Splitting an RFE is a structural decision that changes what the RFE *is* — only the author can make that call.
 
@@ -146,12 +150,15 @@ This flags the content for strategy refinement without destroying it. The HOW de
 
 ### Revision Steps
 
-1. Read the review feedback for each failing RFE
+1. Read the **full** review feedback for each failing RFE (the verbatim assessor output in the review report)
 2. Read the comments file (`artifacts/rfe-tasks/RFE-NNN-comments.md`) if it exists — stakeholder comments may explain why certain content is intentional
-3. Make targeted edits to the artifact files using the Edit tool to address specific rubric failures
-4. Annotate (don't delete) any author context sections that lean into HOW
-5. Add a `### Revision Notes` section at the end of each revised RFE documenting what changed and what gaps remain for the user to fill
-6. Re-run the review (go back to Step 2) on the revised artifacts
+3. For each criterion the assessor flagged, follow its specific recommendations:
+   - **Open to HOW**: Reframe flagged sections to remove prescriptive framing while preserving useful context. If content cannot be reframed, remove it and write it to `artifacts/rfe-tasks/RFE-NNN-removed-context.md` for preservation as a Jira comment during `/rfe.submit`
+   - **WHY**: Strengthen with available evidence (stakeholder comments, strategic alignment references); flag gaps the author must fill (named customers, revenue data)
+   - **Right-sized**: Report the recommendation only; do not split or remove scope
+   - **WHAT / Not a task**: Follow assessor guidance if provided
+4. Add a `### Revision Notes` section at the end of each revised RFE documenting what changed and what gaps remain for the user to fill
+5. Re-run the review (go back to Step 2) on the revised artifacts
 
 **Revision limits**:
 - Maximum 2 auto-revision cycles

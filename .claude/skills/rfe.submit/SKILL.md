@@ -15,7 +15,9 @@ Check the review results. If any RFEs have a "revise" or "reject" recommendation
 
 ## Step 2: Read RFE Artifacts
 
-Read `artifacts/rfes.md` and all RFE files in `artifacts/rfe-tasks/`. **Skip `*-comments.md` files** — these contain Jira comment history used during review and must NOT be included in the Jira description or submitted back to Jira.
+Read `artifacts/rfes.md` and all RFE files in `artifacts/rfe-tasks/`. Skip the following file types — they are review artifacts, not RFE content:
+- `*-comments.md` — Jira comment history used during review
+- `*-removed-context.md` — technical content removed during review, to be posted as a Jira comment (see Step 4)
 
 ## Step 3: Confirm with User
 
@@ -56,6 +58,8 @@ Labels:      <From RFE if specified>
 - `> *Review note: ...` blockquotes (review annotations on author context sections)
 - `<!-- REVISION NOTE: ... -->` HTML comments
 - Any artifact metadata lines (`**Jira Key**:`, `**Size**:`, `**Status**:`) — these are local artifact fields, not Jira description content
+
+**After updating the description**, check for a corresponding `artifacts/rfe-tasks/RFE-NNN-removed-context.md` file. If one exists, post its contents as a Jira comment using `mcp__atlassian__addCommentToJiraIssue`. The file already contains the prefixed message — post it verbatim.
 
 ### If Jira MCP Is NOT Available
 
