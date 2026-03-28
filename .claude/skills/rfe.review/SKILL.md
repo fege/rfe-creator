@@ -40,7 +40,7 @@ python3 scripts/frontmatter.py set artifacts/rfe-tasks/<jira_key>.md \
     status=Ready
 ```
 
-**Save an original snapshot** by copying the file (after frontmatter is set) to `artifacts/rfe-originals/<jira_key>.md`. This snapshot captures the RFE as it existed in Jira before any local review or revision. It serves two purposes: (1) before/after data analysis of what remediation changed, and (2) optimistic conflict detection at submit time. Create the `artifacts/rfe-originals/` directory if it doesn't exist. This file is never modified by review or revision — it is only overwritten by a fresh Jira fetch.
+**Save an original snapshot** of the raw Jira description to `artifacts/rfe-originals/<jira_key>.md`. Write the `fields.description` value as-is (the raw markdown from Jira, not the templated version). This snapshot is used for (1) before/after data analysis of what remediation changed, and (2) optimistic conflict detection at submit time — the submit skill re-fetches the description from Jira and compares it against this file to detect concurrent modifications. Create the `artifacts/rfe-originals/` directory if it doesn't exist. This file is never modified by review or revision — it is only overwritten by a fresh Jira fetch.
 
 **Also write a separate comments file** to `artifacts/rfe-tasks/<jira_key>-comments.md` with the Jira comment history. Format each comment as:
 

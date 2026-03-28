@@ -37,7 +37,7 @@ For each Jira-sourced RFE being submitted, check if an original snapshot exists 
 python3 scripts/fetch_issue.py <rfe_id> --fields summary,description --markdown
 ```
 
-2. Compare the fetched description against the original snapshot's description (ignoring frontmatter). If they differ, someone modified the RFE in Jira since we last fetched it.
+2. Compare the fetched `fields.description` against the contents of the original snapshot file (which contains the raw Jira description, not the templated version). If they differ, someone modified the RFE in Jira since we last fetched it.
 
 3. **If a conflict is detected**: Stop submission for that RFE. Report the conflict:
 
