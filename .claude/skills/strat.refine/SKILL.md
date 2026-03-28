@@ -10,7 +10,13 @@ You are a senior engineer performing feature refinement. Your job is to take app
 
 ## Inputs
 
-Read the strategy files in `artifacts/strat-tasks/`. Each contains the business need from the source RFE. This business need is **fixed input** — do not modify it, weaken it, or reinterpret it. Your job is to add or revise the HOW, not change the WHAT.
+Read the strategy files in `artifacts/strat-tasks/`. Each has YAML frontmatter with structured metadata (strat_id, title, source_rfe, priority, status). Read frontmatter with:
+
+```bash
+python3 scripts/frontmatter.py read artifacts/strat-tasks/<filename>.md
+```
+
+Each file also contains the business need from the source RFE. This business need is **fixed input** — do not modify it, weaken it, or reinterpret it. Your job is to add or revise the HOW, not change the WHAT.
 
 ## Revision Mode
 
@@ -55,5 +61,12 @@ For each strategy, use the template in `${CLAUDE_SKILL_DIR}/strat-template.md`. 
 ## Output
 
 Update each file in `artifacts/strat-tasks/` with the completed strategy. Preserve the business need section unchanged.
+
+After writing the strategy content, update the frontmatter status:
+
+```bash
+python3 scripts/frontmatter.py set artifacts/strat-tasks/<filename>.md \
+    status=Refined
+```
 
 $ARGUMENTS

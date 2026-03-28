@@ -79,14 +79,12 @@ After cloning, run `/strat.refine` to add the technical strategy.
 
 ## Step 4: Create Local Strategy Stubs
 
-Regardless of whether Jira cloning succeeded, create stub files in `artifacts/strat-tasks/` for each strategy:
+Regardless of whether Jira cloning succeeded, create stub files in `artifacts/strat-tasks/` for each strategy.
+
+Write the markdown body to `artifacts/strat-tasks/STRAT-NNN-<slug>.md`:
 
 ```markdown
 # STRAT-NNN: <title>
-
-**Source RFE**: <RFE-NNN or RHAIRFE-NNNN>
-**Jira Key**: <RHAISTRAT-NNNN if cloned, otherwise "pending — see strat-jira-guide.md">
-**Priority**: <priority from source RFE>
 
 ## Business Need (from RFE)
 <Full content copied from the source RFE — this is fixed input for strategy refinement>
@@ -96,6 +94,26 @@ Regardless of whether Jira cloning succeeded, create stub files in `artifacts/st
 ```
 
 The business need section is copied verbatim from the RFE. It must not be modified during strategy work.
+
+Then set frontmatter on each strategy file. First, read the schema to know exact field names and allowed values:
+
+```bash
+python3 scripts/frontmatter.py schema strat-task
+```
+
+Then set frontmatter using the actual values for this strategy:
+
+```bash
+python3 scripts/frontmatter.py set artifacts/strat-tasks/<filename>.md \
+    strat_id=<strat_id> \
+    title="<title>" \
+    source_rfe=<source_rfe_id> \
+    jira_key=<RHAISTRAT_key_or_null> \
+    priority=<priority> \
+    status=Draft
+```
+
+Use `jira_key=null` if Jira cloning was not done.
 
 ## Step 5: Write Artifacts
 
