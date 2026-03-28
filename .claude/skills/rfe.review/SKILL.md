@@ -19,19 +19,24 @@ python3 scripts/fetch_issue.py RHAIRFE-1234 --fields summary,description,priorit
 
 The script outputs JSON to stdout with description and comment bodies already converted to markdown. Parse `fields.description`, `fields.summary`, `fields.priority.name`, and `comments` array.
 
-Write the RFE to `artifacts/rfe-tasks/RHAIRFE-1234.md` (using the Jira key as the filename) using the RFE template format (read `${CLAUDE_SKILL_DIR}/../rfe.create/rfe-template.md` for the format). Then set frontmatter:
+Write the RFE to `artifacts/rfe-tasks/<jira_key>.md` (using the Jira key as the filename) using the RFE template format (read `${CLAUDE_SKILL_DIR}/../rfe.create/rfe-template.md` for the format).
+
+First, read the schema to know exact field names and allowed values:
 
 ```bash
 python3 scripts/frontmatter.py schema rfe-task
-python3 scripts/frontmatter.py set artifacts/rfe-tasks/RHAIRFE-1234.md \
-    rfe_id=RHAIRFE-1234 \
+```
+
+Then set frontmatter, using the Jira key as the `rfe_id`:
+
+```bash
+python3 scripts/frontmatter.py set artifacts/rfe-tasks/<jira_key>.md \
+    rfe_id=<jira_key> \
     title="<title from Jira>" \
-    priority=<priority> \
+    priority=<priority from Jira> \
     size=<inferred size> \
     status=Ready
 ```
-
-Use the Jira key as the `rfe_id` for issues fetched from Jira.
 
 **Also write a separate comments file** to `artifacts/rfe-tasks/RHAIRFE-1234-comments.md` with the Jira comment history. Format each comment as:
 
@@ -105,31 +110,31 @@ Invoke the `rfe-feasibility-review` skill on the RFE artifacts. This runs in a f
 
 ## Step 3: Write Per-Issue Review Files
 
-For each reviewed RFE, write a review file to `artifacts/rfe-reviews/`. First get the schema:
+For each reviewed RFE, write a review file to `artifacts/rfe-reviews/`. First, read the schema to know exact field names and allowed values:
 
 ```bash
 python3 scripts/frontmatter.py schema rfe-review
 ```
 
-Then for each RFE, write the review body (assessor feedback, feasibility details, strategy considerations, revision history) to `artifacts/rfe-reviews/{id}-review.md`, then set frontmatter:
+Then for each RFE, write the review body (assessor feedback, feasibility details, strategy considerations, revision history) to `artifacts/rfe-reviews/{id}-review.md`, then set frontmatter using the actual review results:
 
 ```bash
-python3 scripts/frontmatter.py set artifacts/rfe-reviews/RHAIRFE-1234-review.md \
-    rfe_id=RHAIRFE-1234 \
-    score=9 \
-    pass=true \
-    recommendation=submit \
-    feasibility=feasible \
-    revised=false \
-    needs_attention=false \
-    scores.what=2 \
-    scores.why=1 \
-    scores.open_to_how=2 \
-    scores.not_a_task=2 \
-    scores.right_sized=2
+python3 scripts/frontmatter.py set artifacts/rfe-reviews/<id>-review.md \
+    rfe_id=<rfe_id> \
+    score=<total_score> \
+    pass=<true_or_false> \
+    recommendation=<recommendation> \
+    feasibility=<feasibility> \
+    revised=<true_or_false> \
+    needs_attention=<true_or_false> \
+    scores.what=<what_score> \
+    scores.why=<why_score> \
+    scores.open_to_how=<open_to_how_score> \
+    scores.not_a_task=<not_a_task_score> \
+    scores.right_sized=<right_sized_score>
 ```
 
-For local RFEs (no Jira key), use the RFE-NNN-based filename: `artifacts/rfe-reviews/RFE-001-slug-review.md`.
+Use the RFE's `rfe_id` for the filename prefix (e.g., `RHAIRFE-1234-review.md` for Jira-fetched RFEs, `RFE-001-slug-review.md` for local RFEs).
 
 The review file body should contain:
 

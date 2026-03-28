@@ -20,11 +20,19 @@ python3 scripts/fetch_issue.py RHAIRFE-1234 --fields summary,description,priorit
 
 The script outputs JSON to stdout with the description already converted to markdown. Parse `fields.description`, `fields.summary`, and `fields.priority.name`.
 
-Write it to `artifacts/rfe-tasks/RHAIRFE-1234.md` using the RFE template format (read `${CLAUDE_SKILL_DIR}/../rfe.create/rfe-template.md` for the format). Set frontmatter:
+Write it to `artifacts/rfe-tasks/<jira_key>.md` using the RFE template format (read `${CLAUDE_SKILL_DIR}/../rfe.create/rfe-template.md` for the format).
+
+First, read the schema to know exact field names and allowed values:
 
 ```bash
-python3 scripts/frontmatter.py set artifacts/rfe-tasks/RHAIRFE-1234.md \
-    rfe_id=RHAIRFE-1234 \
+python3 scripts/frontmatter.py schema rfe-task
+```
+
+Then set frontmatter, using the Jira key as the `rfe_id`:
+
+```bash
+python3 scripts/frontmatter.py set artifacts/rfe-tasks/<jira_key>.md \
+    rfe_id=<jira_key> \
     title="<title>" \
     priority=<priority> \
     size=<size> \
@@ -147,22 +155,22 @@ Using the recommended decomposition:
    - If the original came from Jira, note the source key (e.g., `**Split from**: RHAIRFE-1234`)
 4. Number new RFEs sequentially after the highest existing RFE number in `artifacts/rfe-tasks/`
 5. Write each to `artifacts/rfe-tasks/RFE-NNN-<slug>.md`
-6. Set frontmatter on each child with `parent_key` pointing to the original's Jira key:
+6. Set frontmatter on each child with `parent_key` pointing to the original's `rfe_id`:
 
 ```bash
-python3 scripts/frontmatter.py set artifacts/rfe-tasks/RFE-003-<slug>.md \
-    rfe_id=RFE-003 \
-    title="<title>" \
+python3 scripts/frontmatter.py set artifacts/rfe-tasks/<child_filename>.md \
+    rfe_id=<child_rfe_id> \
+    title="<child_title>" \
     priority=<priority> \
     size=<size> \
     status=Draft \
-    parent_key=RHAIRFE-1234
+    parent_key=<parent_rfe_id>
 ```
 
 7. Archive the original by updating its frontmatter status:
 
 ```bash
-python3 scripts/frontmatter.py set artifacts/rfe-tasks/<original-file>.md \
+python3 scripts/frontmatter.py set artifacts/rfe-tasks/<original_filename>.md \
     status=Archived
 ```
 

@@ -35,34 +35,22 @@ Each reviewer receives:
 
 ## Step 4: Write Per-Strategy Review Files
 
-For each reviewed strategy, write a review file to `artifacts/strat-reviews/`. First get the schema:
+For each reviewed strategy, write a review file to `artifacts/strat-reviews/`. First, read the schema to know exact field names and allowed values:
 
 ```bash
 python3 scripts/frontmatter.py schema strat-review
 ```
 
-Then for each strategy, write the review body to `artifacts/strat-reviews/{id}-review.md`, then set frontmatter:
+Then for each strategy, write the review body to `artifacts/strat-reviews/{id}-review.md`, then set frontmatter using the actual review results:
 
 ```bash
-python3 scripts/frontmatter.py set artifacts/strat-reviews/STRAT-001-slug-review.md \
-    strat_id=STRAT-001 \
-    recommendation=revise \
-    reviewers.feasibility=approve \
-    reviewers.testability=revise \
-    reviewers.scope=approve \
-    reviewers.architecture=approve
-```
-
-If the strategy has a Jira key, use it as the `strat_id`:
-
-```bash
-python3 scripts/frontmatter.py set artifacts/strat-reviews/RHAISTRAT-400-review.md \
-    strat_id=RHAISTRAT-400 \
-    recommendation=approve \
-    reviewers.feasibility=approve \
-    reviewers.testability=approve \
-    reviewers.scope=approve \
-    reviewers.architecture=approve
+python3 scripts/frontmatter.py set artifacts/strat-reviews/<id>-review.md \
+    strat_id=<strat_id> \
+    recommendation=<recommendation> \
+    reviewers.feasibility=<verdict> \
+    reviewers.testability=<verdict> \
+    reviewers.scope=<verdict> \
+    reviewers.architecture=<verdict>
 ```
 
 The review file body should contain:
