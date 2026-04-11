@@ -104,7 +104,7 @@ Parse YAML for: `type`, `prompt`, `ids_file`, `vars`, `poll_phase`, `post_verify
       - Build the agent environment string from `vars`: for each key-value pair, replace `{ID}` with the current ID, producing lines like `ID=RHAIRFE-1234`, `ASSESS_PATH=/tmp/rfe-assess/single/RHAIRFE-1234.result.md`, etc.
       - Launch a background Agent with `subagent_type` (if set). The prompt is:
         `"<vars as KEY=VALUE lines>\n\nRead <prompt> and follow all instructions exactly."`
-      - If `parallel` entries exist: for each entry, launch one additional background Agent using the same pattern with the entry's `prompt`.
+      - If `parallel` entries exist: for each entry, launch one additional background Agent. If the entry has its own `vars`, build the env string from those (with `{ID}` replaced) — do NOT use the parent phase's `vars`. Use the entry's `subagent_type` if set. The prompt format is the same: `"<vars as KEY=VALUE lines>\n\nRead <entry's prompt> and follow all instructions exactly."`
 
    b. Poll until wave completes:
 
