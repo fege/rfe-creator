@@ -19,6 +19,22 @@ Check if prior reviews exist in `artifacts/strat-reviews/`. If any exist for the
 bash scripts/fetch-architecture-context.sh
 ```
 
+## Step 2.5: Run Structural Validation (Pre-Filter)
+
+For each strategy in `artifacts/strat-tasks/`, run structural validation to get fast, deterministic metrics:
+
+```bash
+mkdir -p tmp
+for strat_file in artifacts/strat-tasks/*.md; do
+    strat_id=$(basename "$strat_file" .md)
+    python3 scripts/validate_strat_testability.py "$strat_file" > "tmp/structural-${strat_id}.json"
+done
+```
+
+Read the structural validation JSON files to identify any critical structural issues. If any STRAT has `structural_score < 5` or multiple CRITICAL warnings, it will likely produce a low-quality test plan.
+
+Pass the structural validation results to testability-review by including them in the review context (the fork skill will read from tmp/).
+
 ## Step 3: Run Reviews
 
 Invoke these forked reviewer skills in parallel. Each runs in its own isolated context — no reviewer sees another's output.
